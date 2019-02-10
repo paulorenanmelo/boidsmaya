@@ -2,6 +2,7 @@ import maya.cmds as cmds
 import functools
 from boids import *
 import os
+import sys
 
 def createUI( pWindowTitle, pApplyCallback ):
     
@@ -14,39 +15,33 @@ def createUI( pWindowTitle, pApplyCallback ):
 
     cmds.columnLayout(adj = True)
 
-    logopath = os.path.dirname(os.path.abspath(__file__))+"/icons/"
+    #logopath = os.path.dirname(os.path.abspath(__file__))+"/icons/"
 
     cmds.text( label='Boids' )
-    cmds.separator( h=10, style='none' )
+    cmds.separator( h=10, style='none' )     
 
-    def updateLogo( *pArgs ):
+    numberOfShapes = ''
+    shapesNames = []
+    result = cmds.promptDialog(
+        title='Boids Shapes',
+        message='Enter number of shapes in Maya:\nZero will make boids from default cubes',
+        button=['OK', 'Cancel'],
+        defaultButton='OK',
+        cancelButton='Cancel',
+        dismissString='Cancel')
 
-        if cmds.image( "logo", exists=True ):
-            cmds.deleteUI( "logo" )
-
-        n = cmds.intSliderGrp( numberOfBoids, query=True, value=True )
-        if n <= 10: 
-            cmds.image("logo", w=500, h=150, image=logopath+"logo2.jpg")
-        elif n > 10 and n <= 20:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo3.jpg")
-        elif n > 20 and n <= 30:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo4.jpg")
-        elif n > 30 and n <= 40:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo5.jpg")
-        elif n > 40 and n <= 50:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo6.jpg")
-        elif n > 50 and n <= 60:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo7.jpg")
-        elif n > 60 and n <= 70:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo8.jpg")        
-        elif n > 70 and n <= 80:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo10.jpg")
-        elif n > 80 and n <= 90:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo9.jpg")   
-        else:
-            cmds.image("logo", w=500, h=150, image=logopath+"logo11.jpg")        
-
-    numberOfBoids = cmds.intSliderGrp( label = "Number of boids:", min=0, max=500, field=True, value=77, changeCommand=updateLogo)
+    if result == 'OK':
+        numberOfShapes = cmds.promptDialog(query=True, text=True)
+    
+    try: 
+        ns = int(numberOfShapes)
+        if(ns > 0):
+            for index in range(ns):
+                shapesNames.append( cmds.textFieldGrp( label='Boid shape', text='pCubeShape' + str(index+1)) )
+    except ValueError:
+        print("error on converting ")
+        
+    numberOfBoids = cmds.intSliderGrp( label = "Number of boids:", min=0, max=500, field=True, value=77)#, changeCommand=updateLogo)
     boidSize = cmds.floatSliderGrp( label = "Size of boids:", min=0, max=10, field=True, value=1, step=0.001)
     maxSpeed = cmds.floatSliderGrp( label = "Speed limit:", min=0, max=100, field=True, value=10, step=0.001)
     checkBoxes = cmds.checkBoxGrp( numberOfCheckBoxes=3, label='', labelArray3=['Show targets', 'Use goals', 'Random start velocity'], valueArray3=[True, False, False] )
@@ -100,11 +95,11 @@ def createUI( pWindowTitle, pApplyCallback ):
     
     cmds.button( label='Cancel', command=cancelCallback )
     
-    cmds.columnLayout(adj = True, width = 500)
+    #cmds.columnLayout(adj = True, width = 500)
 
-    cmds.separator( h=15, style='in' )
+    #cmds.separator( h=15, style='in' )
 
-    cmds.image("logo", w=500, h=150, image=logopath+"logo2.jpg")
+    #cmds.image("logo", w=500, h=150, image=logopath+"logo2.jpg")
 
     cmds.showWindow()
  
