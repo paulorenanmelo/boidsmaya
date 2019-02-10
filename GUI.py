@@ -2,7 +2,6 @@ import maya.cmds as cmds
 import functools
 from boids import *
 import os
-import sys
 
 def createUI( pWindowTitle, pApplyCallback ):
     
@@ -18,7 +17,7 @@ def createUI( pWindowTitle, pApplyCallback ):
     #logopath = os.path.dirname(os.path.abspath(__file__))+"/icons/"
 
     cmds.text( label='Boids' )
-    cmds.separator( h=10, style='none' )     
+    cmds.separator( h=10, style='none' )
 
     numberOfShapes = ''
     shapesNames = []
@@ -32,15 +31,14 @@ def createUI( pWindowTitle, pApplyCallback ):
 
     if result == 'OK':
         numberOfShapes = cmds.promptDialog(query=True, text=True)
-    
-    try: 
-        ns = int(numberOfShapes)
-        if(ns > 0):
-            for index in range(ns):
-                shapesNames.append( cmds.textFieldGrp( label='Boid shape', text='pCubeShape' + str(index+1)) )
-    except ValueError:
-        print("error on converting ")
-        
+        try:
+            ns = int(numberOfShapes)
+            if(ns > 0):
+                for index in range(ns):
+                    shapesNames.append(cmds.textFieldGrp(label='Boid shape', text='pCubeShape' + str(index+1)))
+        except ValueError:
+            print("error on converting ")
+
     numberOfBoids = cmds.intSliderGrp( label = "Number of boids:", min=0, max=500, field=True, value=77)#, changeCommand=updateLogo)
     boidSize = cmds.floatSliderGrp( label = "Size of boids:", min=0, max=10, field=True, value=1, step=0.001)
     maxSpeed = cmds.floatSliderGrp( label = "Speed limit:", min=0, max=100, field=True, value=10, step=0.001)
@@ -95,7 +93,7 @@ def createUI( pWindowTitle, pApplyCallback ):
     
     cmds.button( label='Cancel', command=cancelCallback )
     
-    #cmds.columnLayout(adj = True, width = 500)
+    cmds.columnLayout(adj = True, width = 500)
 
     #cmds.separator( h=15, style='in' )
 
@@ -126,8 +124,3 @@ def applyCallback( pNumberOfBoidsField, pBoidSize, pNFrames, pMaxSpeed, pSeparat
     aRadius= cmds.floatSliderGrp( pAlignmentRadius, query=True, value=True )
 
     main(nBoids, bScale, nFrames, mSpeed, cWeight, cRadius, sWeight, sRadius, aWeight, aRadius, cBox1, cBox2, cBox3)
-
-
-
-
-
